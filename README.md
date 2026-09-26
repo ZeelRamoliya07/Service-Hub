@@ -37,6 +37,17 @@ Completion
 Analytics
 ```
 
+### Product workflow
+
+ServiceHub models the operational lifecycle of a service business:
+
+```text
+Customer → Service Request → Assignment → Employee → Appointment → Completion → Analytics
+```
+
+This workflow connects operational records with role-specific access and
+database-driven business metrics.
+
 ### Core capabilities
 
 -   Secure JWT-based authentication
@@ -59,8 +70,9 @@ Analytics
 
 ## 🎯 Project Goals
 
-ServiceHub was built to demonstrate how a real-world business
-application can be structured across the full stack.
+ServiceHub was built as a realistic full-stack business application,
+with an emphasis on clear architecture, secure authorization, relational
+data modeling, testing, and deployability.
 
 The main goals are:
 
@@ -122,7 +134,7 @@ graph TD
 
   Testing                 Pytest + Playwright     Backend and E2E testing
 
-  Deployment              Docker, Nginx, AWS      Containerization and
+  Deployment              Docker, Nginx,       Containerization and
                                                   deployment
   -----------------------------------------------------------------------
 
@@ -442,15 +454,14 @@ http://localhost:8000/docs
 -   Docker
 -   Docker Compose
 -   Nginx
--   AWS S3
--   AWS CloudFront
--   AWS App Runner / ECS Fargate
+-   Vercel
+-   Render
 
 ------------------------------------------------------------------------
 
 ## 📁 Project Structure
 
-A typical ServiceHub repository is organized as:
+The repository is organized as:
 
 ``` text
 Service-Hub/
@@ -487,10 +498,6 @@ Service-Hub/
 ├── README.md
 └── LICENSE
 ```
-
-> Adjust this structure if your actual repository uses different
-> folders. The README should describe the codebase you actually have,
-> not an idealized structure.
 
 ------------------------------------------------------------------------
 
@@ -719,41 +726,56 @@ docker compose down
 
 ## ☁️ Deployment Architecture
 
-A possible production deployment architecture is:
+ServiceHub can be deployed using a simple managed architecture:
 
-``` mermaid
+```mermaid
 graph LR
-    C[Client] --> CF[AWS CloudFront]
-    CF --> S3[AWS S3]
-    CF --> ALB[AWS Application Load Balancer]
-    ALB --> ECS[ECS Fargate / App Runner]
-    ECS --> DB[(Supabase PostgreSQL)]
+    C[User Browser] --> V[Vercel]
+    V -->|REST API + JWT| R[Render - FastAPI]
+    R --> DB[(Supabase PostgreSQL)]
 ```
 
-### Frontend
+### Frontend — Vercel
 
-1.  Build the React application:
+The React + Vite frontend can be deployed to Vercel.
 
-``` bash
+1. Build the React application:
+
+```bash
 npm run build
 ```
 
-2.  Deploy the generated `dist/` directory to an appropriate static
-    hosting platform such as S3.
-3.  Place CloudFront in front of the static assets.
-4.  Configure HTTPS using AWS Certificate Manager.
+2. Connect the repository to Vercel.
+3. Configure the production API base URL.
+4. Deploy the generated frontend through Vercel.
 
-### Backend
+### Backend — Render
 
-1.  Build the backend Docker image.
-2.  Deploy it using AWS App Runner or ECS Fargate.
-3.  Configure environment variables securely.
-4.  Allow the backend to connect to the managed PostgreSQL database.
-5.  Configure CORS for the production frontend domain.
+The FastAPI backend can be deployed to Render.
 
-### Database
+1. Connect the repository to Render.
+2. Configure the backend build/start commands.
+3. Configure production environment variables securely.
+4. Configure the production CORS origin for the deployed frontend.
+5. Connect the backend to the Supabase PostgreSQL database.
 
-The application can use Supabase PostgreSQL as the managed database.
+### Database — Supabase
+
+ServiceHub uses PostgreSQL through Supabase as the managed production database.
+
+The database connection string should be provided through an environment variable and should never be committed to the repository.
+
+### Production flow
+
+```text
+User
+  ↓
+Vercel
+  ↓
+FastAPI / Render
+  ↓
+Supabase PostgreSQL
+```
 
 ------------------------------------------------------------------------
 
@@ -808,7 +830,7 @@ than static values.
 
 ## 🧭 Development Roadmap
 
-Potential future improvements:
+Future improvements:
 
 -   [ ] Email notifications
 -   [ ] Customer-facing portal
@@ -880,26 +902,6 @@ FastAPI also provides the OpenAPI schema automatically.
 
 ------------------------------------------------------------------------
 
-## 🤝 Contributing
-
-Contributions and improvements are welcome.
-
-Basic workflow:
-
-``` bash
-git checkout -b feature/your-feature
-```
-
-Make your changes, then:
-
-``` bash
-git add .
-git commit -m "feat: add your feature"
-git push origin feature/your-feature
-```
-
-Open a pull request on GitHub.
-
 ------------------------------------------------------------------------
 
 ## 📄 License
@@ -923,23 +925,8 @@ business workflow.
 
 ## ⭐ Project Summary
 
-**ServiceHub** transforms fragmented service-business operations into a
-single workflow:
-
-``` text
-CUSTOMER
-   ↓
-SERVICE REQUEST
-   ↓
-ASSIGNMENT
-   ↓
-EMPLOYEE
-   ↓
-APPOINTMENT
-   ↓
-COMPLETION
-   ↓
-ANALYTICS
-```
+ServiceHub brings customer management, service requests, employee
+assignment, appointments, completion tracking, and analytics into one
+business workflow.
 
 > **Service requests. Assigned. Tracked. Completed.**
